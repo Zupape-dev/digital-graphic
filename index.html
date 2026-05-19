@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตารางเวรทำความสะอาด ปวช.1 & ปวช.2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.5/cdn.min.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+<style>
+  :root {
+    --morning: #f59e0b;
+    --morning-light: #fef3c7;
+    --morning-dark: #d97706;
+    --evening: #6366f1;
+    --evening-light: #eef2ff;
+    --evening-dark: #4f46e5;
+    --pvch1: #10b981;
+    --pvch1-light: #d1fae5;
+    --pvch2: #ec4899;
+    --pvch2-light: #fce7f3;
+    --today-glow: 0 0 0 3px #6366f1, 0 0 20px rgba(99,102,241,0.3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: #0f0f1a;
+    min-height: 100vh;
+    color: #e2e8f0;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(236,72,153,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content-wrap { position: relative; z-index: 1; }
+
+  h1, h2, h3 { font-family: 'Kanit', sans-serif; }
+
+  .glass {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .glass-light {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Header */
+  .header-glow {
+    text-shadow: 0 0 40px rgba(99,102,241,0.6), 0 0 80px rgba(99,102,241,0.3);
+  }
+
+  /* Tab buttons */
+  .tab-btn {
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background 0.25s ease;
+  }
+  .tab-btn.active {
+    background: rgba(99,102,241,0.2);
+    color: #a5b4fc;
+    border-color: rgba(99,102,241,0.4);
+  }
+  .tab-btn.active::after { background: #6366f1; }
+
+  /* Day card */
+  .day-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeSlideIn 0.4s ease both;
+  }
+  .day-card:hover { transform: translateY(-2px); }
+
+  .day-card.today-card {
+    box-shadow: var(--today-glow);
+    border-color: rgba(99,102,241,0.5) !important;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Today badge */
+  .today-badge {
+    animation: pulse-badge 2s infinite;
+  }
+  @keyframes pulse-badge {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(99,102,241,0.5); }
+    50% { box-shadow: 0 0 0 6px rgba(99,102,241,0); }
+  }
+
+  /* Morning / Evening sections */
+  .morning-section {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(251,191,36,0.06));
+    border-left: 3px solid var(--morning);
+  }
+  .evening-section {
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.06));
+    border-left: 3px solid var(--evening);
+  }
+
+  /* Duty items */
+  .duty-item {
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    transition: all 0.2s ease;
+  }
+  .duty-item:hover { transform: translateX(3px); }
+
+  .sweep-tag {
+    background: rgba(16,185,129,0.15);
+    color: #6ee7b7;
+    border: 1px solid rgba(16,185,129,0.25);
+  }
+  .trash-tag {
+    background: rgba(239,68,68,0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239,68,68,0.25);
+  }
+  .both-tag {
+    background: rgba(168,85,247,0.15);
+    color: #d8b4fe;
+    border: 1px solid rgba(168,85,247,0.25);
+  }
+
+  .pvch1-badge {
+    background: rgba(16,185,129,0.15);
+    color: #6ee7b7;
+    border: 1px solid rgba(16,185,129,0.2);
+  }
+  .pvch2-badge {
+    background: rgba(236,72,153,0.15);
+    color: #f9a8d4;
+    border: 1px solid rgba(236,72,153,0.2);
+  }
+
+  /* Filter bar for class */
+  .filter-pill {
+    cursor: pointer;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .filter-pill.active-all { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.2); }
+  .filter-pill.active-1 { background: rgba(16,185,129,0.2); color: #6ee7b7; border-color: rgba(16,185,129,0.3); }
+  .filter-pill.active-2 { background: rgba(236,72,153,0.2); color: #f9a8d4; border-color: rgba(236,72,153,0.3); }
+  .filter-pill:not(.active-all):not(.active-1):not(.active-2) {
+    color: #94a3b8;
+  }
+  .filter-pill:hover { opacity: 0.85; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+  ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 3px; }
+
+  /* Responsive grid */
+  .day-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .day-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1280px) {
+    .day-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Summary chips */
+  .summary-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .location-icon { font-size: 15px; }
+</style>
+</head>
+<body>
+<div class="content-wrap" x-data="scheduleApp()" x-init="init()">
+
+  <!-- Header -->
+  <header class="text-center pt-12 pb-8 px-4">
+    <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-sm text-indigo-300 mb-4 font-medium">
+      <span>🎨</span> แผนกดิจิทัลกราฟิก
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black header-glow text-white leading-tight">
+      ตารางเวรทำความสะอาด
+    </h1>
+    <p class="text-indigo-300 text-xl font-semibold mt-2">ปวช.1 &amp; ปวช.2</p>
+    <p class="text-slate-400 text-sm mt-3" x-text="todayText"></p>
+  </header>
+
+  <!-- Summary Bar -->
+  <div class="max-w-5xl mx-auto px-4 mb-8">
+    <div class="glass rounded-2xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="summary-chip glass-light flex-col items-start text-center justify-center w-full rounded-xl py-3">
+        <div class="text-2xl font-black text-emerald-400">ปวช.1</div>
+        <div class="text-slate-400 text-xs mt-0.5">เลขที่ 1–27</div>
+      </div>
+      <div class="summary-chip glass-light flex-col items-start text-center justify-center w-full rounded-xl py-3">
+        <div class="text-2xl font-black text-pink-400">ปวช.2</div>
+        <div class="text-slate-400 text-xs mt-0.5">เลขที่ 1–25</div>
+      </div>
+      <div class="summary-chip glass-light flex-col items-center justify-center w-full rounded-xl py-3">
+        <div class="text-yellow-400 text-lg">☀️ เช้า</div>
+        <div class="text-slate-400 text-xs mt-0.5">ก่อน/หลังเข้าแถว</div>
+      </div>
+      <div class="summary-chip glass-light flex-col items-center justify-center w-full rounded-xl py-3">
+        <div class="text-indigo-400 text-lg">🌙 เย็น</div>
+        <div class="text-slate-400 text-xs mt-0.5">หลังเลิกเรียน</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="max-w-5xl mx-auto px-4 mb-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
+    <!-- Day Tabs -->
+    <div class="glass rounded-xl p-1 flex flex-wrap gap-1 w-full sm:w-auto">
+      <template x-for="tab in dayTabs" :key="tab.value">
+        <button
+          @click="activeDay = tab.value"
+          :class="['tab-btn px-3 py-2 rounded-lg text-sm font-semibold border transition-all', activeDay === tab.value ? 'active border-indigo-500/40 text-indigo-300' : 'border-transparent text-slate-400 hover:text-slate-200']"
+          x-text="tab.label">
+        </button>
+      </template>
+    </div>
+
+    <!-- Class filter -->
+    <div class="glass rounded-xl p-1 flex gap-1">
+      <button @click="classFilter='all'" :class="['filter-pill', classFilter==='all' ? 'active-all' : '']">ทั้งหมด</button>
+      <button @click="classFilter='1'" :class="['filter-pill', classFilter==='1' ? 'active-1' : '']">🟢 ปวช.1</button>
+      <button @click="classFilter='2'" :class="['filter-pill', classFilter==='2' ? 'active-2' : '']">🩷 ปวช.2</button>
+    </div>
+  </div>
+
+  <!-- Day Cards -->
+  <main class="max-w-5xl mx-auto px-4 pb-16">
+    <div class="day-grid">
+      <template x-for="(day, idx) in filteredDays" :key="day.key">
+        <div :class="['day-card glass border', day.isToday ? 'today-card border-indigo-500/30' : 'border-white/5']"
+             :style="`animation-delay: ${idx * 0.07}s`">
+          
+          <!-- Day header -->
+          <div class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg font-bold text-white" x-text="day.nameTH"></h2>
+                <template x-if="day.isToday">
+                  <span class="today-badge text-xs font-bold bg-indigo-500 text-white px-2 py-0.5 rounded-full">วันนี้</span>
+                </template>
+              </div>
+              <div class="text-xs text-slate-500 font-medium" x-text="day.nameEN"></div>
+            </div>
+            <div class="text-3xl opacity-50" x-text="day.emoji"></div>
+          </div>
+
+          <div class="px-5 py-4 space-y-4">
+
+            <!-- Morning -->
+            <template x-if="classFilter !== '2' || true">
+              <div class="morning-section rounded-xl p-3">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="text-lg">☀️</span>
+                  <div>
+                    <div class="text-yellow-400 font-bold text-sm">ช่วงเช้า</div>
+                    <div class="text-yellow-600 text-xs">ก่อน/หลังเข้าแถว</div>
+                  </div>
+                </div>
+                <div class="glass-light rounded-lg p-2.5 mb-1">
+                  <div class="text-xs text-slate-400 mb-2 flex items-center gap-1.5">
+                    <span>🪜</span> บันไดหน้าห้อง Mac
+                    <span class="sweep-tag text-xs px-2 py-0.5 rounded-full">กวาดพื้น</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    <template x-for="duty in day.morning" :key="duty.label">
+                      <template x-if="classFilter === 'all' || duty.class === classFilter">
+                        <span :class="['text-xs font-semibold px-2.5 py-1 rounded-lg', duty.class === '1' ? 'pvch1-badge' : 'pvch2-badge']" x-text="duty.label"></span>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- Evening -->
+            <div class="evening-section rounded-xl p-3">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">🌙</span>
+                <div>
+                  <div class="text-indigo-300 font-bold text-sm">ช่วงเย็น</div>
+                  <div class="text-indigo-500 text-xs">หลังเลิกเรียน</div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <template x-for="zone in day.evening" :key="zone.location">
+                  <template x-if="hasVisibleStudents(zone, classFilter)">
+                    <div class="duty-item glass-light">
+                      <div class="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                        <span class="location-icon" x-text="zone.icon"></span>
+                        <span class="text-xs text-slate-300 font-semibold" x-text="zone.location"></span>
+                        <span :class="['text-xs px-2 py-0.5 rounded-full font-medium', zone.dutyClass]" x-text="zone.duty"></span>
+                      </div>
+                      <div class="flex flex-wrap gap-1">
+                        <template x-for="student in zone.students" :key="student.label">
+                          <template x-if="classFilter === 'all' || student.class === classFilter">
+                            <span :class="['text-xs font-semibold px-2 py-0.5 rounded-md', student.class === '1' ? 'pvch1-badge' : 'pvch2-badge']" x-text="student.label"></span>
+                          </template>
+                        </template>
+                      </div>
+                    </div>
+                  </template>
+                </template>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Empty state -->
+    <template x-if="filteredDays.length === 0">
+      <div class="text-center py-20 text-slate-500">
+        <div class="text-5xl mb-3">🔍</div>
+        <p class="text-lg font-semibold">ไม่พบข้อมูลที่ตรงกับตัวกรอง</p>
+      </div>
+    </template>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center pb-8 text-slate-600 text-sm">
+    <div class="flex items-center justify-center gap-4 mb-2">
+      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> ปวช.1</span>
+      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-pink-500 inline-block"></span> ปวช.2</span>
+      <span class="flex items-center gap-1"><span class="sweep-tag text-xs px-1.5 py-0.5 rounded">กวาด</span></span>
+      <span class="flex items-center gap-1"><span class="trash-tag text-xs px-1.5 py-0.5 rounded">ขยะ</span></span>
+    </div>
+    <p>ตารางเวรทำความสะอาด · แผนกดิจิทัลกราฟิก</p>
+  </footer>
+
+</div>
+
+<script>
+function scheduleApp() {
+  const days = [
+    {
+      key: 'mon', nameTH: 'วันจันทร์', nameEN: 'Monday', emoji: '🟡', jsDay: 1,
+      morning: [
+        { label: 'ปวช.1 เลขที่ 1', class: '1' },
+        { label: 'ปวช.2 เลขที่ 1', class: '2' },
+      ],
+      evening: [
+        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 2', class: '1' }] },
+        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 3', class: '1' }] },
+        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 4', class: '1' }, { label: 'ปวช.1 เลขที่ 5', class: '1' }] },
+        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 6', class: '1' }] },
+        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 2', class: '2' }] },
+        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 3', class: '2' }] },
+        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 4', class: '2' }] },
+        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 5', class: '2' }] },
+      ]
+    },
+    {
+      key: 'tue', nameTH: 'วันอังคาร', nameEN: 'Tuesday', emoji: '🔴', jsDay: 2,
+      morning: [
+        { label: 'ปวช.1 เลขที่ 7', class: '1' },
+        { label: 'ปวช.2 เลขที่ 6', class: '2' },
+      ],
+      evening: [
+        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 8', class: '1' }] },
+        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 9', class: '1' }] },
+        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 10', class: '1' }, { label: 'ปวช.1 เลขที่ 11', class: '1' }] },
+        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 12', class: '1' }] },
+        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 7', class: '2' }] },
+        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 8', class: '2' }] },
+        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 9', class: '2' }] },
+        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 10', class: '2' }] },
+      ]
+    },
+    {
+      key: 'wed', nameTH: 'วันพุธ', nameEN: 'Wednesday', emoji: '🟢', jsDay: 3,
+      morning: [
+        { label: 'ปวช.1 เลขที่ 13', class: '1' },
+        { label: 'ปวช.2 เลขที่ 11', class: '2' },
+      ],
+      evening: [
+        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 14', class: '1' }] },
+        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 15', class: '1' }] },
+        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 16', class: '1' }, { label: 'ปวช.1 เลขที่ 17', class: '1' }] },
+        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 18', class: '1' }] },
+        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 12', class: '2' }] },
+        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 13', class: '2' }] },
+        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 14', class: '2' }] },
+        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 15', class: '2' }] },
+      ]
+    },
+    {
+      key: 'thu', nameTH: 'วันพฤหัสบดี', nameEN: 'Thursday', emoji: '🟠', jsDay: 4,
+      morning: [
+        { label: 'ปวช.1 เลขที่ 19', class: '1' },
+        { label: 'ปวช.2 เลขที่ 16', class: '2' },
+      ],
+      evening: [
+        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 20', class: '1' }] },
+        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 21', class: '1' }] },
+        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 22', class: '1' }, { label: 'ปวช.1 เลขที่ 23', class: '1' }] },
+        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 24', class: '1' }, { label: 'ปวช.1 เลขที่ 25', class: '1' }] },
+        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 17', class: '2' }] },
+        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 18', class: '2' }] },
+        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 19', class: '2' }] },
+        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 20', class: '2' }] },
+      ]
+    },
+    {
+      key: 'fri', nameTH: 'วันศุกร์', nameEN: 'Friday', emoji: '🔵', jsDay: 5,
+      morning: [
+        { label: 'ปวช.1 เลขที่ 26', class: '1' },
+        { label: 'ปวช.2 เลขที่ 21', class: '2' },
+      ],
+      evening: [
+        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 27', class: '1' }] },
+        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 1', class: '1' }] },
+        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 2', class: '1' }, { label: 'ปวช.1 เลขที่ 3', class: '1' }] },
+        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 4', class: '1' }, { label: 'ปวช.1 เลขที่ 5', class: '1' }] },
+        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 22', class: '2' }] },
+        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 23', class: '2' }] },
+        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 24', class: '2' }] },
+        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 25', class: '2' }] },
+      ]
+    },
+  ];
+
+  return {
+    days,
+    activeDay: 'all',
+    classFilter: 'all',
+    todayJsDay: new Date().getDay(),
+    todayText: '',
+
+    dayTabs: [
+      { value: 'all', label: '📋 ทั้งหมด' },
+      { value: 'mon', label: 'จันทร์' },
+      { value: 'tue', label: 'อังคาร' },
+      { value: 'wed', label: 'พุธ' },
+      { value: 'thu', label: 'พฤหัส' },
+      { value: 'fri', label: 'ศุกร์' },
+    ],
+
+    init() {
+      const now = new Date();
+      const dayNames = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+      const d = now.getDate().toString().padStart(2,'0');
+      const m = (now.getMonth()+1).toString().padStart(2,'0');
+      const y = now.getFullYear() + 543;
+      this.todayText = `วัน${dayNames[now.getDay()]}ที่ ${d}/${m}/${y}`;
+
+      // Mark today
+      days.forEach(day => { day.isToday = day.jsDay === this.todayJsDay; });
+
+      // Auto-select today's tab if it's a weekday
+      const todayDay = days.find(d => d.isToday);
+      if (todayDay) this.activeDay = todayDay.key;
+    },
+
+    get filteredDays() {
+      if (this.activeDay === 'all') return this.days;
+      return this.days.filter(d => d.key === this.activeDay);
+    },
+
+    hasVisibleStudents(zone, filter) {
+      if (filter === 'all') return true;
+      return zone.students.some(s => s.class === filter);
+    }
+  };
+}
+</script>
+</body>
+</html>
