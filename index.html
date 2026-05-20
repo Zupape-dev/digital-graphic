@@ -1,514 +1,595 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ตารางเวรทำความสะอาด ปวช.1 & ปวช.2</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.5/cdn.min.js" defer></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-<style>
-  :root {
-    --morning: #f59e0b;
-    --morning-light: #fef3c7;
-    --morning-dark: #d97706;
-    --evening: #6366f1;
-    --evening-light: #eef2ff;
-    --evening-dark: #4f46e5;
-    --pvch1: #10b981;
-    --pvch1-light: #d1fae5;
-    --pvch2: #ec4899;
-    --pvch2-light: #fce7f3;
-    --today-glow: 0 0 0 3px #6366f1, 0 0 20px rgba(99,102,241,0.3);
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ตารางเวรทำความสะอาด แผนกดิจิทัล</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --surface2: #1a2236;
+      --border: #1e293b;
+      --blue-primary: #3b82f6;
+      --blue-soft: #1d4ed8;
+      --blue-glow: rgba(59,130,246,0.18);
+      --green-primary: #10b981;
+      --green-soft: #065f46;
+      --green-glow: rgba(16,185,129,0.15);
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, .font-display { font-family: 'Kanit', sans-serif; }
 
-  * { box-sizing: border-box; }
+    /* BG Mesh */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(59,130,246,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 110%, rgba(16,185,129,0.09) 0%, transparent 60%);
+      pointer-events: none;
+    }
 
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: #0f0f1a;
-    min-height: 100vh;
-    color: #e2e8f0;
-    position: relative;
-    overflow-x: hidden;
-  }
+    .wrapper { position: relative; z-index: 1; }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(236,72,153,0.1) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
+    /* Header */
+    .site-header {
+      background: rgba(17,24,39,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 50;
+    }
 
-  .content-wrap { position: relative; z-index: 1; }
+    .nav-btn-sm {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.18s;
+      line-height: 1;
+    }
+    .nav-btn-sm:hover { background: var(--blue-primary); border-color: var(--blue-primary); }
+    .nav-btn-sm.today-sm {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      border-color: #3b82f6;
+      font-size: 12px;
+    }
 
-  h1, h2, h3 { font-family: 'Kanit', sans-serif; }
+    /* Week Nav */
+    .week-nav {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { background: var(--blue-primary); border-color: var(--blue-primary); }
+    .nav-btn.today-btn {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      border-color: #3b82f6;
+      font-weight: 600;
+    }
+    .week-label {
+      font-family: 'Kanit', sans-serif;
+      font-size: 15px;
+      color: var(--text-dim);
+      min-width: 200px;
+      text-align: center;
+    }
 
-  .glass {
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
+    /* Day Card */
+    .day-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .day-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .day-card.today-card {
+      border-color: var(--blue-primary);
+      box-shadow: 0 0 0 1px var(--blue-primary), 0 0 32px var(--blue-glow);
+    }
+    .day-header {
+      padding: 14px 20px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .day-badge {
+      font-family: 'Kanit', sans-serif;
+      font-size: 18px; font-weight: 700;
+    }
+    .day-date { font-size: 13px; color: var(--text-muted); margin-left: auto; }
 
-  .glass-light {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-  }
+    /* Morning zone */
+    .morning-zone {
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(251,191,36,0.03));
+      border-bottom: 1px solid var(--border);
+    }
+    .zone-title {
+      font-family: 'Kanit', sans-serif;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+      color: var(--amber); margin-bottom: 10px;
+      display: flex; align-items: center; gap-6px;
+    }
+    .morning-pair {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
 
-  /* Header */
-  .header-glow {
-    text-shadow: 0 0 40px rgba(99,102,241,0.6), 0 0 80px rgba(99,102,241,0.3);
-  }
+    /* Cols */
+    .cols {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    }
+    .col-p1 {
+      padding: 14px 12px;
+      background: linear-gradient(160deg, rgba(59,130,246,0.06) 0%, transparent 100%);
+      border-right: 1px solid var(--border);
+    }
+    .col-p2 {
+      padding: 14px 12px;
+      background: linear-gradient(160deg, rgba(16,185,129,0.06) 0%, transparent 100%);
+    }
+    .col-header {
+      font-family: 'Kanit', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
+      margin-bottom: 10px; padding-bottom: 6px;
+      border-bottom: 2px solid;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .col-header.p1 { color: #60a5fa; border-color: #3b82f6; }
+    .col-header.p2 { color: #34d399; border-color: #10b981; }
 
-  /* Tab buttons */
-  .tab-btn {
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .tab-btn::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: transparent;
-    transition: background 0.25s ease;
-  }
-  .tab-btn.active {
-    background: rgba(99,102,241,0.2);
-    color: #a5b4fc;
-    border-color: rgba(99,102,241,0.4);
-  }
-  .tab-btn.active::after { background: #6366f1; }
+    /* Zone item */
+    .zone-item { margin-bottom: 10px; }
+    .zone-label {
+      font-size: 11px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 4px;
+      margin-bottom: 5px; font-weight: 600; letter-spacing: 0.04em;
+    }
+    .student-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 28px;
+      border-radius: 8px;
+      font-size: 12px; font-weight: 700; font-family: 'Kanit', sans-serif;
+      border: 1px solid;
+      transition: transform 0.15s;
+    }
+    .chip:hover { transform: scale(1.12); }
+    .chip-blue {
+      background: rgba(59,130,246,0.15);
+      border-color: rgba(59,130,246,0.4);
+      color: #93c5fd;
+    }
+    .chip-green {
+      background: rgba(16,185,129,0.15);
+      border-color: rgba(16,185,129,0.35);
+      color: #6ee7b7;
+    }
+    .chip-amber {
+      background: rgba(245,158,11,0.15);
+      border-color: rgba(245,158,11,0.35);
+      color: #fcd34d;
+    }
+    .chip-wide {
+      width: auto; padding: 0 10px;
+    }
 
-  /* Day card */
-  .day-card {
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    animation: fadeSlideIn 0.4s ease both;
-  }
-  .day-card:hover { transform: translateY(-2px); }
+    /* Totals badge */
+    .totals {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+    }
+    .total-pill {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px;
+      font-weight: 600; font-family: 'Kanit', sans-serif;
+    }
+    .total-pill.p1 { background: rgba(59,130,246,0.15); color: #93c5fd; }
+    .total-pill.p2 { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+    .total-pill.total { background: rgba(255,255,255,0.06); color: var(--text-dim); }
 
-  .day-card.today-card {
-    box-shadow: var(--today-glow);
-    border-color: rgba(99,102,241,0.5) !important;
-  }
+    /* Legend */
+    .legend-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
 
-  @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+    /* Responsive */
+    @media (max-width: 480px) {
+      .cols { grid-template-columns: 1fr; }
+      .col-p1 { border-right: none; border-bottom: 1px solid var(--border); }
+      .morning-pair { grid-template-columns: 1fr; }
+      .week-label { font-size: 13px; min-width: 160px; }
+      .chip { width: 32px; height: 26px; font-size: 11px; }
+    }
 
-  /* Today badge */
-  .today-badge {
-    animation: pulse-badge 2s infinite;
-  }
-  @keyframes pulse-badge {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(99,102,241,0.5); }
-    50% { box-shadow: 0 0 0 6px rgba(99,102,241,0); }
-  }
+    /* Animate */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .day-card { animation: fadeUp 0.4s ease both; }
+    .day-card:nth-child(1) { animation-delay: 0.05s; }
+    .day-card:nth-child(2) { animation-delay: 0.10s; }
+    .day-card:nth-child(3) { animation-delay: 0.15s; }
+    .day-card:nth-child(4) { animation-delay: 0.20s; }
+    .day-card:nth-child(5) { animation-delay: 0.25s; }
 
-  /* Morning / Evening sections */
-  .morning-section {
-    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(251,191,36,0.06));
-    border-left: 3px solid var(--morning);
-  }
-  .evening-section {
-    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.06));
-    border-left: 3px solid var(--evening);
-  }
+    .today-indicator {
+      display: inline-block;
+      background: var(--blue-primary);
+      color: white;
+      font-size: 10px;
+      font-family: 'Kanit', sans-serif;
+      padding: 1px 8px;
+      border-radius: 20px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
 
-  /* Duty items */
-  .duty-item {
-    border-radius: 10px;
-    padding: 10px 14px;
-    margin: 6px 0;
-    transition: all 0.2s ease;
-  }
-  .duty-item:hover { transform: translateX(3px); }
-
-  .sweep-tag {
-    background: rgba(16,185,129,0.15);
-    color: #6ee7b7;
-    border: 1px solid rgba(16,185,129,0.25);
-  }
-  .trash-tag {
-    background: rgba(239,68,68,0.15);
-    color: #fca5a5;
-    border: 1px solid rgba(239,68,68,0.25);
-  }
-  .both-tag {
-    background: rgba(168,85,247,0.15);
-    color: #d8b4fe;
-    border: 1px solid rgba(168,85,247,0.25);
-  }
-
-  .pvch1-badge {
-    background: rgba(16,185,129,0.15);
-    color: #6ee7b7;
-    border: 1px solid rgba(16,185,129,0.2);
-  }
-  .pvch2-badge {
-    background: rgba(236,72,153,0.15);
-    color: #f9a8d4;
-    border: 1px solid rgba(236,72,153,0.2);
-  }
-
-  /* Filter bar for class */
-  .filter-pill {
-    cursor: pointer;
-    border-radius: 999px;
-    padding: 4px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-  }
-  .filter-pill.active-all { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.2); }
-  .filter-pill.active-1 { background: rgba(16,185,129,0.2); color: #6ee7b7; border-color: rgba(16,185,129,0.3); }
-  .filter-pill.active-2 { background: rgba(236,72,153,0.2); color: #f9a8d4; border-color: rgba(236,72,153,0.3); }
-  .filter-pill:not(.active-all):not(.active-1):not(.active-2) {
-    color: #94a3b8;
-  }
-  .filter-pill:hover { opacity: 0.85; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
-  ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 3px; }
-
-  /* Responsive grid */
-  .day-grid {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 768px) {
-    .day-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (min-width: 1280px) {
-    .day-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  /* Summary chips */
-  .summary-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .location-icon { font-size: 15px; }
-</style>
+    .summary-bar {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 18px;
+      display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+    }
+    .summary-item { font-size: 13px; color: var(--text-dim); }
+    .summary-item span { font-weight: 700; font-family: 'Kanit', sans-serif; }
+    .summary-item .v-blue { color: #60a5fa; }
+    .summary-item .v-green { color: #34d399; }
+  </style>
 </head>
 <body>
-<div class="content-wrap" x-data="scheduleApp()" x-init="init()">
+<div class="wrapper">
 
-  <!-- Header -->
-  <header class="text-center pt-12 pb-8 px-4">
-    <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-sm text-indigo-300 mb-4 font-medium">
-      <span>🎨</span> แผนกดิจิทัลกราฟิก
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="max-w-4xl mx-auto px-4 py-4">
+      <!-- Top row: dept name -->
+      <div class="flex items-center gap-2 mb-1">
+        <span style="font-size:18px">🖥️</span>
+        <span class="font-display text-sm font-semibold" style="color:#94a3b8">แผนกดิจิทัลกราฟิก</span>
+      </div>
+      <!-- Title -->
+      <h1 class="font-display text-2xl font-bold text-white mb-1">ตารางเวรทำความสะอาด</h1>
+      <!-- Subtitle: student info -->
+      <div class="flex flex-wrap gap-x-4 gap-y-0.5 mb-2">
+        <span class="text-sm" style="color:#94a3b8">ปวช.1 &amp; ปวช.2</span>
+      </div>
+      <!-- Date row with week nav -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button class="nav-btn-sm" id="btnPrev">&#8592;</button>
+        <span class="font-display text-sm font-semibold" style="color:#e2e8f0" id="weekLabel">—</span>
+        <button class="nav-btn-sm" id="btnNext">&#8594;</button>
+        <button class="nav-btn-sm today-sm" id="btnToday">สัปดาห์นี้</button>
+      </div>
     </div>
-    <h1 class="text-4xl md:text-5xl font-black header-glow text-white leading-tight">
-      ตารางเวรทำความสะอาด
-    </h1>
-    <p class="text-indigo-300 text-xl font-semibold mt-2">ปวช.1 &amp; ปวช.2</p>
-    <p class="text-slate-400 text-sm mt-3" x-text="todayText"></p>
   </header>
 
-  <!-- Summary Bar -->
-  <div class="max-w-5xl mx-auto px-4 mb-8">
-    <div class="glass rounded-2xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-      <div class="summary-chip glass-light flex-col items-start text-center justify-center w-full rounded-xl py-3">
-        <div class="text-2xl font-black text-emerald-400">ปวช.1</div>
-        <div class="text-slate-400 text-xs mt-0.5">เลขที่ 1–27</div>
-      </div>
-      <div class="summary-chip glass-light flex-col items-start text-center justify-center w-full rounded-xl py-3">
-        <div class="text-2xl font-black text-pink-400">ปวช.2</div>
-        <div class="text-slate-400 text-xs mt-0.5">เลขที่ 1–25</div>
-      </div>
-      <div class="summary-chip glass-light flex-col items-center justify-center w-full rounded-xl py-3">
-        <div class="text-yellow-400 text-lg">☀️ เช้า</div>
-        <div class="text-slate-400 text-xs mt-0.5">ก่อน/หลังเข้าแถว</div>
-      </div>
-      <div class="summary-chip glass-light flex-col items-center justify-center w-full rounded-xl py-3">
-        <div class="text-indigo-400 text-lg">🌙 เย็น</div>
-        <div class="text-slate-400 text-xs mt-0.5">หลังเลิกเรียน</div>
-      </div>
-    </div>
-  </div>
+  <!-- MAIN -->
+  <main class="max-w-4xl mx-auto px-4 py-6">
 
-  <!-- Controls -->
-  <div class="max-w-5xl mx-auto px-4 mb-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
-    <!-- Day Tabs -->
-    <div class="glass rounded-xl p-1 flex flex-wrap gap-1 w-full sm:w-auto">
-      <template x-for="tab in dayTabs" :key="tab.value">
-        <button
-          @click="activeDay = tab.value"
-          :class="['tab-btn px-3 py-2 rounded-lg text-sm font-semibold border transition-all', activeDay === tab.value ? 'active border-indigo-500/40 text-indigo-300' : 'border-transparent text-slate-400 hover:text-slate-200']"
-          x-text="tab.label">
-        </button>
-      </template>
-    </div>
+    <!-- Day cards -->
+    <div id="scheduleContainer" class="flex flex-col gap-5"></div>
 
-    <!-- Class filter -->
-    <div class="glass rounded-xl p-1 flex gap-1">
-      <button @click="classFilter='all'" :class="['filter-pill', classFilter==='all' ? 'active-all' : '']">ทั้งหมด</button>
-      <button @click="classFilter='1'" :class="['filter-pill', classFilter==='1' ? 'active-1' : '']">🟢 ปวช.1</button>
-      <button @click="classFilter='2'" :class="['filter-pill', classFilter==='2' ? 'active-2' : '']">🩷 ปวช.2</button>
-    </div>
-  </div>
-
-  <!-- Day Cards -->
-  <main class="max-w-5xl mx-auto px-4 pb-16">
-    <div class="day-grid">
-      <template x-for="(day, idx) in filteredDays" :key="day.key">
-        <div :class="['day-card glass border', day.isToday ? 'today-card border-indigo-500/30' : 'border-white/5']"
-             :style="`animation-delay: ${idx * 0.07}s`">
-          
-          <!-- Day header -->
-          <div class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5">
-            <div>
-              <div class="flex items-center gap-2">
-                <h2 class="text-lg font-bold text-white" x-text="day.nameTH"></h2>
-                <template x-if="day.isToday">
-                  <span class="today-badge text-xs font-bold bg-indigo-500 text-white px-2 py-0.5 rounded-full">วันนี้</span>
-                </template>
-              </div>
-              <div class="text-xs text-slate-500 font-medium" x-text="day.nameEN"></div>
-            </div>
-            <div class="text-3xl opacity-50" x-text="day.emoji"></div>
-          </div>
-
-          <div class="px-5 py-4 space-y-4">
-
-            <!-- Morning -->
-            <template x-if="classFilter !== '2' || true">
-              <div class="morning-section rounded-xl p-3">
-                <div class="flex items-center gap-2 mb-3">
-                  <span class="text-lg">☀️</span>
-                  <div>
-                    <div class="text-yellow-400 font-bold text-sm">ช่วงเช้า</div>
-                    <div class="text-yellow-600 text-xs">ก่อน/หลังเข้าแถว</div>
-                  </div>
-                </div>
-                <div class="glass-light rounded-lg p-2.5 mb-1">
-                  <div class="text-xs text-slate-400 mb-2 flex items-center gap-1.5">
-                    <span>🪜</span> บันไดหน้าห้อง Mac
-                    <span class="sweep-tag text-xs px-2 py-0.5 rounded-full">กวาดพื้น</span>
-                  </div>
-                  <div class="flex flex-wrap gap-1.5">
-                    <template x-for="duty in day.morning" :key="duty.label">
-                      <template x-if="classFilter === 'all' || duty.class === classFilter">
-                        <span :class="['text-xs font-semibold px-2.5 py-1 rounded-lg', duty.class === '1' ? 'pvch1-badge' : 'pvch2-badge']" x-text="duty.label"></span>
-                      </template>
-                    </template>
-                  </div>
-                </div>
-              </div>
-            </template>
-
-            <!-- Evening -->
-            <div class="evening-section rounded-xl p-3">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="text-lg">🌙</span>
-                <div>
-                  <div class="text-indigo-300 font-bold text-sm">ช่วงเย็น</div>
-                  <div class="text-indigo-500 text-xs">หลังเลิกเรียน</div>
-                </div>
-              </div>
-              <div class="space-y-2">
-                <template x-for="zone in day.evening" :key="zone.location">
-                  <template x-if="hasVisibleStudents(zone, classFilter)">
-                    <div class="duty-item glass-light">
-                      <div class="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                        <span class="location-icon" x-text="zone.icon"></span>
-                        <span class="text-xs text-slate-300 font-semibold" x-text="zone.location"></span>
-                        <span :class="['text-xs px-2 py-0.5 rounded-full font-medium', zone.dutyClass]" x-text="zone.duty"></span>
-                      </div>
-                      <div class="flex flex-wrap gap-1">
-                        <template x-for="student in zone.students" :key="student.label">
-                          <template x-if="classFilter === 'all' || student.class === classFilter">
-                            <span :class="['text-xs font-semibold px-2 py-0.5 rounded-md', student.class === '1' ? 'pvch1-badge' : 'pvch2-badge']" x-text="student.label"></span>
-                          </template>
-                        </template>
-                      </div>
-                    </div>
-                  </template>
-                </template>
-              </div>
-            </div>
-
-          </div>
+    <!-- Legend -->
+    <div class="legend-card mt-8">
+      <h3 class="font-display text-sm font-bold text-gray-400 mb-3 tracking-widest uppercase">คำอธิบายสัญลักษณ์</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="flex items-start gap-2">
+          <span>☀️</span>
+          <span class="text-gray-400"><strong class="text-amber-400">ช่วงเช้า</strong> — ปวช.1 + ปวช.2 ทำร่วมกัน บันไดหน้าห้อง Mac</span>
         </div>
-      </template>
-    </div>
-
-    <!-- Empty state -->
-    <template x-if="filteredDays.length === 0">
-      <div class="text-center py-20 text-slate-500">
-        <div class="text-5xl mb-3">🔍</div>
-        <p class="text-lg font-semibold">ไม่พบข้อมูลที่ตรงกับตัวกรอง</p>
+        <div class="flex items-start gap-2">
+          <span>🌙</span>
+          <span class="text-gray-400"><strong class="text-blue-400">ช่วงเย็น ปวช.1</strong> — ห้อง Mac & ห้องนั่งเล่น + ถนนหลังแผนก</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span>🌙</span>
+          <span class="text-gray-400"><strong class="text-green-400">ช่วงเย็น ปวช.2</strong> — ห้องเรียนคอม / ทางเดิน / หน้าห้องพักครู</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span>🔄</span>
+          <span class="text-gray-400">เลขที่รันต่อเนื่องทุกวัน ไม่รีเซ็ต วนซ้ำอัตโนมัติ</span>
+        </div>
       </div>
-    </template>
-  </main>
-
-  <!-- Footer -->
-  <footer class="text-center pb-8 text-slate-600 text-sm">
-    <div class="flex items-center justify-center gap-4 mb-2">
-      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> ปวช.1</span>
-      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-pink-500 inline-block"></span> ปวช.2</span>
-      <span class="flex items-center gap-1"><span class="sweep-tag text-xs px-1.5 py-0.5 rounded">กวาด</span></span>
-      <span class="flex items-center gap-1"><span class="trash-tag text-xs px-1.5 py-0.5 rounded">ขยะ</span></span>
     </div>
-    <p>ตารางเวรทำความสะอาด · แผนกดิจิทัลกราฟิก</p>
-  </footer>
 
+  </main>
 </div>
 
 <script>
-function scheduleApp() {
-  const days = [
-    {
-      key: 'mon', nameTH: 'วันจันทร์', nameEN: 'Monday', emoji: '🟡', jsDay: 1,
-      morning: [
-        { label: 'ปวช.1 เลขที่ 1', class: '1' },
-        { label: 'ปวช.2 เลขที่ 1', class: '2' },
-      ],
-      evening: [
-        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 2', class: '1' }] },
-        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 3', class: '1' }] },
-        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 4', class: '1' }, { label: 'ปวช.1 เลขที่ 5', class: '1' }] },
-        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 6', class: '1' }] },
-        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 2', class: '2' }] },
-        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 3', class: '2' }] },
-        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 4', class: '2' }] },
-        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 5', class: '2' }] },
-      ]
-    },
-    {
-      key: 'tue', nameTH: 'วันอังคาร', nameEN: 'Tuesday', emoji: '🔴', jsDay: 2,
-      morning: [
-        { label: 'ปวช.1 เลขที่ 7', class: '1' },
-        { label: 'ปวช.2 เลขที่ 6', class: '2' },
-      ],
-      evening: [
-        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 8', class: '1' }] },
-        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 9', class: '1' }] },
-        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 10', class: '1' }, { label: 'ปวช.1 เลขที่ 11', class: '1' }] },
-        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 12', class: '1' }] },
-        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 7', class: '2' }] },
-        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 8', class: '2' }] },
-        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 9', class: '2' }] },
-        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 10', class: '2' }] },
-      ]
-    },
-    {
-      key: 'wed', nameTH: 'วันพุธ', nameEN: 'Wednesday', emoji: '🟢', jsDay: 3,
-      morning: [
-        { label: 'ปวช.1 เลขที่ 13', class: '1' },
-        { label: 'ปวช.2 เลขที่ 11', class: '2' },
-      ],
-      evening: [
-        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 14', class: '1' }] },
-        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 15', class: '1' }] },
-        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 16', class: '1' }, { label: 'ปวช.1 เลขที่ 17', class: '1' }] },
-        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 18', class: '1' }] },
-        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 12', class: '2' }] },
-        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 13', class: '2' }] },
-        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 14', class: '2' }] },
-        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 15', class: '2' }] },
-      ]
-    },
-    {
-      key: 'thu', nameTH: 'วันพฤหัสบดี', nameEN: 'Thursday', emoji: '🟠', jsDay: 4,
-      morning: [
-        { label: 'ปวช.1 เลขที่ 19', class: '1' },
-        { label: 'ปวช.2 เลขที่ 16', class: '2' },
-      ],
-      evening: [
-        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 20', class: '1' }] },
-        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 21', class: '1' }] },
-        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 22', class: '1' }, { label: 'ปวช.1 เลขที่ 23', class: '1' }] },
-        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 24', class: '1' }, { label: 'ปวช.1 เลขที่ 25', class: '1' }] },
-        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 17', class: '2' }] },
-        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 18', class: '2' }] },
-        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 19', class: '2' }] },
-        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 20', class: '2' }] },
-      ]
-    },
-    {
-      key: 'fri', nameTH: 'วันศุกร์', nameEN: 'Friday', emoji: '🔵', jsDay: 5,
-      morning: [
-        { label: 'ปวช.1 เลขที่ 26', class: '1' },
-        { label: 'ปวช.2 เลขที่ 21', class: '2' },
-      ],
-      evening: [
-        { icon: '💻', location: 'ห้องคอม Mac', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 27', class: '1' }] },
-        { icon: '🛋️', location: 'ห้องนั่งเล่น', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 1', class: '1' }] },
-        { icon: '🪜', location: 'บันได & พื้นที่ว่างระหว่างห้อง', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.1 เลขที่ 2', class: '1' }, { label: 'ปวช.1 เลขที่ 3', class: '1' }] },
-        { icon: '🗑️', location: 'หลังแผนก', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.1 เลขที่ 4', class: '1' }, { label: 'ปวช.1 เลขที่ 5', class: '1' }] },
-        { icon: '🏫', location: 'ห้องเรียน', duty: 'กวาด+ขยะ', dutyClass: 'both-tag', students: [{ label: 'ปวช.2 เลขที่ 22', class: '2' }] },
-        { icon: '🖥️', location: 'ห้องคอม PC', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 23', class: '2' }] },
-        { icon: '🚪', location: 'หน้าห้องอาจารย์แจ็ค', duty: 'กวาด', dutyClass: 'sweep-tag', students: [{ label: 'ปวช.2 เลขที่ 24', class: '2' }] },
-        { icon: '🏡', location: 'หน้าห้องพักครู', duty: 'เก็บขยะ', dutyClass: 'trash-tag', students: [{ label: 'ปวช.2 เลขที่ 25', class: '2' }] },
-      ]
-    },
-  ];
+// ============================
+// CONFIG
+// ============================
+const P1_COUNT = 27;
+const P2_COUNT = 25;
+const BASE_DATE = new Date(2026, 5, 1); // June 1, 2026 (Monday)
 
+const DAY_NAMES = ['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์'];
+const DAY_NAMES_SHORT = ['จ','อ','พ','พฤ','ศ'];
+const MONTH_NAMES = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+// P1: Mon-Wed = 6, Thu-Fri = 7
+// P2: all days = 6
+function p1PerDay(dayIndex) { return dayIndex <= 2 ? 6 : 7; } // 0=Mon
+function p2PerDay() { return 6; }
+
+// Distribution within P1 slots per day:
+// Morning: 1 (pos 0)
+// Evening Mac+Lounge: Mon-Wed 4 (pos 1-4), Thu-Fri 5 (pos 1-5)
+// Evening Trash: 1 (last)
+function p1Zones(dayIndex, slots) {
+  const mac = dayIndex <= 2 ? 4 : 5;
   return {
-    days,
-    activeDay: 'all',
-    classFilter: 'all',
-    todayJsDay: new Date().getDay(),
-    todayText: '',
-
-    dayTabs: [
-      { value: 'all', label: '📋 ทั้งหมด' },
-      { value: 'mon', label: 'จันทร์' },
-      { value: 'tue', label: 'อังคาร' },
-      { value: 'wed', label: 'พุธ' },
-      { value: 'thu', label: 'พฤหัส' },
-      { value: 'fri', label: 'ศุกร์' },
-    ],
-
-    init() {
-      const now = new Date();
-      const dayNames = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
-      const d = now.getDate().toString().padStart(2,'0');
-      const m = (now.getMonth()+1).toString().padStart(2,'0');
-      const y = now.getFullYear() + 543;
-      this.todayText = `วัน${dayNames[now.getDay()]}ที่ ${d}/${m}/${y}`;
-
-      // Mark today
-      days.forEach(day => { day.isToday = day.jsDay === this.todayJsDay; });
-
-      // Auto-select today's tab if it's a weekday
-      const todayDay = days.find(d => d.isToday);
-      if (todayDay) this.activeDay = todayDay.key;
-    },
-
-    get filteredDays() {
-      if (this.activeDay === 'all') return this.days;
-      return this.days.filter(d => d.key === this.activeDay);
-    },
-
-    hasVisibleStudents(zone, filter) {
-      if (filter === 'all') return true;
-      return zone.students.some(s => s.class === filter);
-    }
+    morning: slots.slice(0, 1),
+    mac: slots.slice(1, 1 + mac),
+    trash: slots.slice(1 + mac)
   };
 }
+
+// Distribution within P2 slots per day (always 6):
+// Morning: 1 (pos 0)
+// Evening Room: 3 (pos 1-3)
+// Evening Hall: 1 (pos 4)
+// Evening TeacherRoom: 1 (pos 5)
+function p2Zones(slots) {
+  return {
+    morning: slots.slice(0, 1),
+    room: slots.slice(1, 4),
+    hall: slots.slice(4, 5),
+    teacher: slots.slice(5, 6)
+  };
+}
+
+// ============================
+// CALCULATION
+// ============================
+function getMondayOf(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = (day === 0) ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function daysBetween(a, b) {
+  return Math.round((b - a) / 86400000);
+}
+
+// Count total slots from base up to (not including) a given weekday offset
+function slotsBefore(weekdayOffset, isP1) {
+  // weekdayOffset = total weekdays (Mon-Fri) from base
+  let total = 0;
+  for (let i = 0; i < weekdayOffset; i++) {
+    const dow = i % 5; // 0=Mon
+    total += isP1 ? p1PerDay(dow) : p2PerDay();
+  }
+  return total;
+}
+
+function getWeekdayOffset(monday) {
+  // How many weekdays (Mon-Fri) have passed from BASE_DATE to monday
+  const base = getMondayOf(BASE_DATE);
+  const diffDays = daysBetween(base, monday);
+  const weeks = Math.floor(diffDays / 7);
+  const extra = diffDays % 7;
+  return weeks * 5 + Math.min(extra, 5);
+}
+
+function getScheduleForWeek(monday) {
+  const weekStart = new Date(monday);
+  const wdBase = getWeekdayOffset(weekStart);
+  const days = [];
+
+  for (let d = 0; d < 5; d++) {
+    const date = new Date(weekStart);
+    date.setDate(date.getDate() + d);
+
+    const p1Slots = p1PerDay(d);
+    const p2Slots = p2PerDay();
+
+    // Starting index (1-based) for this day
+    const p1StartIdx = slotsBefore(wdBase + d, true);
+    const p2StartIdx = slotsBefore(wdBase + d, false);
+
+    // Generate student numbers (1-based, with modulo)
+    const p1Nums = [];
+    for (let i = 0; i < p1Slots; i++) {
+      p1Nums.push(((p1StartIdx + i) % P1_COUNT) + 1);
+    }
+    const p2Nums = [];
+    for (let i = 0; i < p2Slots; i++) {
+      p2Nums.push(((p2StartIdx + i) % P2_COUNT) + 1);
+    }
+
+    days.push({ date, d, p1Nums, p2Nums, p1StartIdx, p2StartIdx });
+  }
+  return days;
+}
+
+// ============================
+// RENDERING
+// ============================
+function padNum(n) { return String(n).padStart(2,'0'); }
+
+function formatDate(date) {
+  return `${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear() + 543}`;
+}
+
+function renderChips(nums, cls) {
+  return nums.map(n =>
+    `<div class="chip ${cls}">${n}</div>`
+  ).join('');
+}
+
+function renderDay(day, todayMon, currentMon) {
+  const { date, d, p1Nums, p2Nums } = day;
+  const p1Z = p1Zones(d, p1Nums);
+  const p2Z = p2Zones(p2Nums);
+
+  const todayDate = new Date(); todayDate.setHours(0,0,0,0);
+  const isToday = date.getTime() === todayDate.getTime();
+
+  const todayBadge = isToday ? '<span class="today-indicator">วันนี้</span>' : '';
+
+  const totalDay = p1Nums.length + p2Nums.length;
+
+  return `
+  <div class="day-card ${isToday ? 'today-card' : ''}">
+    <div class="day-header">
+      <span class="day-badge" style="color:${isToday ? '#60a5fa' : '#e2e8f0'}">${DAY_NAMES[d]}${todayBadge}</span>
+      <span class="day-date">${formatDate(date)}</span>
+    </div>
+
+    <!-- MORNING ZONE -->
+    <div class="morning-zone">
+      <div class="zone-title">☀️ ช่วงเช้า — บันไดหน้าห้อง Mac (กวาดพื้นร่วมกัน)</div>
+      <div class="morning-pair">
+        <div>
+          <div class="zone-label" style="color:#fbbf24">🧹 ปวช.1</div>
+          <div class="student-chips">${renderChips(p1Z.morning, 'chip-amber')}</div>
+        </div>
+        <div>
+          <div class="zone-label" style="color:#fbbf24">🧹 ปวช.2</div>
+          <div class="student-chips">${renderChips(p2Z.morning, 'chip-amber')}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENING: 2 cols -->
+    <div class="cols">
+
+      <!-- P1 col -->
+      <div class="col-p1">
+        <div class="col-header p1">🌙 ช่วงเย็น ปวช.1</div>
+
+        <div class="zone-item">
+          <div class="zone-label" style="color:#93c5fd">
+            🧹 ห้อง Mac & ห้องนั่งเล่น
+            <span style="color:#475569;font-size:10px">(${p1Z.mac.length} คน)</span>
+          </div>
+          <div class="student-chips">${renderChips(p1Z.mac, 'chip-blue')}</div>
+        </div>
+
+        <div class="zone-item">
+          <div class="zone-label" style="color:#93c5fd">🗑️ ถนนหลังแผนก</div>
+          <div class="student-chips">${renderChips(p1Z.trash, 'chip-blue')}</div>
+        </div>
+      </div>
+
+      <!-- P2 col -->
+      <div class="col-p2">
+        <div class="col-header p2">🌙 ช่วงเย็น ปวช.2</div>
+
+        <div class="zone-item">
+          <div class="zone-label" style="color:#6ee7b7">🧹 ห้องเรียนคอม (4 ห้อง)</div>
+          <div class="student-chips">${renderChips(p2Z.room, 'chip-green')}</div>
+        </div>
+
+        <div class="zone-item">
+          <div class="zone-label" style="color:#6ee7b7">🧹 ทางเดิน & โถง</div>
+          <div class="student-chips">${renderChips(p2Z.hall, 'chip-green')}</div>
+        </div>
+
+        <div class="zone-item">
+          <div class="zone-label" style="color:#6ee7b7">🗑️ หน้าห้องพักครู</div>
+          <div class="student-chips">${renderChips(p2Z.teacher, 'chip-green')}</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Totals -->
+    <div class="totals">
+      <span class="total-pill p1">ปวช.1: ${p1Nums.length} คน</span>
+      <span class="total-pill p2">ปวช.2: ${p2Nums.length} คน</span>
+      <span class="total-pill total">รวม ${totalDay} คน/วัน</span>
+      <span style="font-size:11px;color:#475569;margin-left:auto">
+        P1#${p1Nums[0]}–${p1Nums[p1Nums.length-1]} | P2#${p2Nums[0]}–${p2Nums[p2Nums.length-1]}
+      </span>
+    </div>
+  </div>`;
+}
+
+// ============================
+// WEEK STATE
+// ============================
+let currentMonday = getMondayOf(new Date());
+
+function render() {
+  const days = getScheduleForWeek(currentMonday);
+  const container = document.getElementById('scheduleContainer');
+
+  // Format: วันพุธที่ 20/05/2569 - วันศุกร์ที่ 22/05/2569
+  const startDate = days[0].date;
+  const endDate = days[4].date;
+  function shortDate(d) {
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yy = d.getFullYear() + 543;
+    return `${dd}/${mm}/${yy}`;
+  }
+  const DOW_TH = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+  const label = `วัน${DOW_TH[startDate.getDay()]}ที่ ${shortDate(startDate)} – วัน${DOW_TH[endDate.getDay()]}ที่ ${shortDate(endDate)}`;
+  document.getElementById('weekLabel').textContent = label;
+
+  container.innerHTML = days.map(day => renderDay(day, getMondayOf(new Date()), currentMonday)).join('');
+}
+
+document.getElementById('btnPrev').addEventListener('click', () => {
+  currentMonday.setDate(currentMonday.getDate() - 7);
+  render();
+});
+document.getElementById('btnNext').addEventListener('click', () => {
+  currentMonday.setDate(currentMonday.getDate() + 7);
+  render();
+});
+document.getElementById('btnToday').addEventListener('click', () => {
+  currentMonday = getMondayOf(new Date());
+  render();
+});
+
+// Init
+render();
 </script>
 </body>
 </html>
